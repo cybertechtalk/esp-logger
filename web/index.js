@@ -2,6 +2,17 @@ function updateTables() {
     let clientTable = document.querySelector('#clients'); var clientString = "";
     let networkTable = document.querySelector('#networks'); var networkString = "";
     let knownTable = document.querySelector('#known'); var knownString = "";
+    
+    $.getJSON("wifi.json?rand=" + Date.now(), function (data) {
+        document.querySelector('#wifi').innerHTML = 
+        "<tr><td>" + data.wifi.SSID + "</td>"
+        + "<td>" + getManufacturer(data.wifi.MacAddress) + "</td>"
+        + "<td>" + data.wifi.IpAddress + "</td>"
+        + "<td>" + data.wifi.Channel + "</td>"
+        + "<td>" + data.wifi.RSSI + "</td>"
+        + "<td>" + data.wifi.Hostname + "</td>"
+        + "<td>" + data.wifi.MacAddress + "</td></tr>";
+    });
 
     $.getJSON("clients.json?rand=" + Date.now(), function (rawData) {  // update clients
         $.each(rawData, function (header, clients) {
@@ -84,8 +95,8 @@ function getManufacturer(bssid) {
         success: function (data) {
             var lines = data.split(/\r\n|\n/);
             for (var i = 1; i < lines.length - 1; i++) { // ignore header and blank line
-                var data = lines[i].split('\t');
-                if (data[0] == bssid.substring(0,8)) { vendor = data[1]; console.log(vendor); }
+                var data = lines[i].split(':');
+                if (data[0] == bssid.substring(0,8).replaceAll(':','')) { vendor = data[1]; console.log(vendor); }
             }
         }
     });

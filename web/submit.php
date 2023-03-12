@@ -3,7 +3,11 @@
 header("Content-Type: application/json"); 
 $data = json_decode(file_get_contents("php://input"));
 
-if ($data->clients) { 
+if ($data->wifi) {
+	$wifi = fopen("wifi.json", "w") or die("Can't open file, check permissions");
+    fwrite($wifi,json_encode($data));
+}
+else if ($data->clients) { 
     $clients = fopen("clients.json", "w") or die("Can't open file, check permissions");
     fwrite($clients,json_encode($data));
 }

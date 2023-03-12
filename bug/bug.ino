@@ -3,9 +3,9 @@
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
 
-const char* net = "network here";
-const char* password = " password here";
-const char* serverName = "http://192.168.1.89:80/web/submit.php";
+const char* net = "";
+const char* password = "";
+const char* serverName = "http://<server-ip-address>:80/web/submit.php";
 
 unsigned long progTime;
 
@@ -80,8 +80,9 @@ void setup() {
   Serial.print("Connected to WiFi network with IP Address: ");
   Serial.println(WiFi.localIP());
   HTTPClient http;
-  
-  http.begin(serverName);
+  WiFiClient client;
+
+  http.begin(client, serverName);
 
   http.addHeader("Content-Type", "application/json");
   msg = "[";
@@ -173,6 +174,17 @@ void loop() {
 //      Serial.print("HTTP Response code: "); Serial.println(httpResponseCode);
      
       http.end();
+
+      http.begin(client,serverName);
+  
+      http.addHeader("Content-Type", "application/json");
+      msg = "{\"wifi\":";
+      msg+= "{\"SSID\": \""+WiFi.SSID()+"\" , \"Channel\": \""+WiFi.channel()+"\", \"RSSI\":\""+WiFi.RSSI()+"\", \"Hostname\": \""+WiFi.hostname()+"\", \"MacAddress\": \""+WiFi.macAddress()+"\", \"IpAddress\": \""+WiFi.localIP().toString()+"\"}";
+      msg+="}";
+      httpResponseCode = http.POST(msg);
+
+      http.end();
+      
     }
     else {
 //      Serial.println("here");
